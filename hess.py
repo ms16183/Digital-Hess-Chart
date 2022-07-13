@@ -11,14 +11,14 @@ import info
 
 
 class HessChart:
-    def __init__(self, cm, inch, name, fixing_point, angle=45, limit=1):
+    def __init__(self, cm, inch, name, fixing_point_angle, angle=45, limit=1):
         """Hessチャート描画
 
         Args:
             cm (float): モニタ上の長さ(センチメートル)．
             name (str): Hessチャートのタグ名．
             inch (float): モニタの対角線のインチ数
-            fixing_point (tuple): 固定点．
+            fixing_point_angle (tuple): 固定点の角度．
             angle (float, optional): Hessチャートの表示角度. Defaults to 45.
             limit (float, optional): matplotlibの出力範囲指定. Defaults to 1.
         """
@@ -29,7 +29,7 @@ class HessChart:
         # 対角インチ
         self.inch = inch
         # 固定点
-        self.fixing_point = fixing_point
+        self.fixing_point_angle = fixing_point_angle
         # 視線の点
         self.point = (None, None)
         # Hessチャートの角度範囲
@@ -41,7 +41,7 @@ class HessChart:
 
         print(f'figsize={cm/2.54}, dpi={dpi}')
 
-        # figure
+        # 余白なしでグラフ生成
         self.fig = plt.figure(figsize=(cm/2.54, cm/2.54), dpi=dpi)
         self.fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
         self.ax = self.fig.add_subplot(1, 1, 1)
@@ -81,7 +81,7 @@ class HessChart:
             self.ax.plot(x, y, 'r:')
 
         # 固定点のプロット
-        self.draw_point(*self.fixing_point)
+        self.draw_point(*self.fixing_point_angle)
 
         # 範囲指定，目盛の削除
         self.ax.set_xlim(-limit, limit)
@@ -90,6 +90,15 @@ class HessChart:
         self.ax.set_yticks([])
 
     def convert_hess_coordinate(self, vertical_angle, horizontal_angle):
+        """角度からHessチャート上の座標の値に変換する．
+
+        Args:
+            vertical_angle (float): 垂直角度[deg]
+            horizontal_angle (float): 水平角度[deg]
+
+        Returns:
+            float: 座標(x, y)
+        """
         alpha = (90-vertical_angle) * np.pi/180
         theta = (90-horizontal_angle) * np.pi/180
         phi = np.arctan(np.cos(alpha)/np.sqrt(np.sin(theta)**2-np.cos(alpha)**2))
@@ -119,8 +128,8 @@ class HessChart:
     def get_point(self):
         return self.point
     
-    def get_fixing_point(self):
-        return self.fixing_point
+    def get_fixing_point_angle(self):
+        return self.fixing_point_angle
 
 
     def get_hess_chart(self):

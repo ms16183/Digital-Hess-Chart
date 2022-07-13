@@ -38,10 +38,10 @@ window.finalize()
 graph_hess = window['-graph-'].draw_image(data=charts[chart_index].get_hess_chart_as_byte(), location=(0, 0))
 cursor = window['-graph-'].draw_point((-100, -100), 5, color='green')
 
-# カーソル設定
+# カーソル設定(カーソル非表示)
 window['-graph-'].set_cursor('none')
 
-# バインド
+# バインド(カーソルの動き，左クリック)
 window['-graph-'].bind('<Motion>', 'motion')
 window['-graph-'].bind('<ButtonPress-1>', 'click')
 
@@ -77,7 +77,7 @@ while True:
 
         # Hessチャートを切り替え
         graph_hess = window['-graph-'].draw_image(data=charts[chart_index].get_hess_chart_as_byte(), location=(0, 0))
-        # カーソルを最もフロントに
+        # カーソルを最前面に
         window['-graph-'].bring_figure_to_front(cursor)
         # チャート名切り替え
         window['-state-'].update(charts[chart_index].get_chart_name())
@@ -101,8 +101,9 @@ while True:
         graph_hess = window['-graph-'].draw_image(data=charts[chart_index].get_hess_chart_as_byte(), location=(0, 0))
         window['-graph-'].bring_figure_to_front(cursor)
 
+        # ログ
         print(f'{charts[chart_index].get_chart_name()}')
-        print(f'fixing point: {charts[chart_index].convert_hess_coordinate(*charts[chart_index].get_fixing_point())}')
+        print(f'fixing point: {charts[chart_index].convert_hess_coordinate(*charts[chart_index].get_fixing_point_angle())}')
         print(f'  your point: {charts[chart_index].get_point()}')
         print(f'')
 
