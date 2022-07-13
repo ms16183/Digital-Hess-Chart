@@ -1,4 +1,7 @@
+from datetime import datetime
 import PySimpleGUI as sg
+import csv
+import datetime
 import info
 from hess import HessChart
 
@@ -50,20 +53,14 @@ while True:
 
     event, values = window.read()
 
-    # アプリケーションの終了
-    if event in (None, '-quit-'):
-        if sg.PopupYesNo('Are you quit?') == 'Yes':
-            break
-
-
-    # 緑ポインタの表示
+    # マウス移動時，緑ポインタの表示
     if event == '-graph-motion':
         mousex = window['-graph-'].user_bind_event.x
         mousey = window['-graph-'].user_bind_event.y
         window['-graph-'].relocate_figure(cursor, mousex, mousey)
 
 
-    # Hessチャートの切り替え
+    # 切替えボタン押下時，Hessチャートの切り替え
     if event in ('-prev-', '-next-'):
         if event == '-prev-':
             chart_index -= 1 
@@ -83,7 +80,7 @@ while True:
         window['-state-'].update(charts[chart_index].get_chart_name())
 
         
-    # グラフクリック位置の記録
+    # クリック時，グラフクリック位置の記録
     if event == '-graph-click':
         # マウス位置を座標に変換(中心を(0,0))
         mousex = window['-graph-'].user_bind_event.x
@@ -102,11 +99,26 @@ while True:
         window['-graph-'].bring_figure_to_front(cursor)
 
         # ログ
+
         print(f'{charts[chart_index].get_chart_name()}')
         print(f'fixing point: {charts[chart_index].convert_hess_coordinate(*charts[chart_index].get_fixing_point_angle())}')
         print(f'  your point: {charts[chart_index].get_point()}')
         print(f'')
 
+    # 終了ボタン押下時，アプリケーションの終了
+    if event in (None, '-quit-'):
+        if sg.PopupYesNo('Are you quit?') == 'Yes':
+            # ログ出力用のリストを生成
+            logdata = [['Name', 'Fixing Point X', 'Fixing Point Y', 'Point X', 'Point Y']]
+            for c in charts:
+                logdata.append([c.get_chart_name(), *c.convert_hess_coordinate(*c.get_fixing_point_angle()), *c.get_point()])
+            logdata = list(zip(*logdata)) # 転置
+            # ログをファイル出力
+            with open(datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')+'_dhs.csv', 'w') as f:
+                writer = csv.writer(f)
+                writer.writerows(logdata)
+            # 無限ループから脱出
+            break
 
 
 # ---------- 終了処理 ----------
