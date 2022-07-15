@@ -164,10 +164,3 @@ cython_debug/
 #.idea/
 
 # End of https://www.toptal.com/developers/gitignore/api/python
-
-# log data
-*.csv
-
-# demo data
-*.mp4
-*.wmv
