@@ -108,18 +108,19 @@ while True:
     # 終了ボタン押下時，アプリケーションの終了
     if event in (None, '-quit-'):
         if sg.PopupYesNo('Are you quit?') == 'Yes':
-            # ログ出力用のリストを生成
-            logdata = [['Name', 'Fixing Point X', 'Fixing Point Y', 'Point X', 'Point Y']]
-            for c in charts:
-                logdata.append([c.get_chart_name(), *c.convert_hess_coordinate(*c.get_fixing_point_angle()), *c.get_point()])
-            logdata = list(zip(*logdata)) # 転置
-            # ログをファイル出力
-            with open(datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')+'_dhs.csv', 'w') as f:
-                writer = csv.writer(f)
-                writer.writerows(logdata)
-            # 無限ループから脱出
             break
 
 
 # ---------- 終了処理 ----------
+# GUI終了
 window.close() 
+
+# ログ出力用のリストを生成
+logdata = [['Name', 'Fixing Point X', 'Fixing Point Y', 'Point X', 'Point Y']]
+for c in charts:
+    logdata.append([c.get_chart_name(), *c.convert_hess_coordinate(*c.get_fixing_point_angle()), *c.get_point()])
+logdata = list(zip(*logdata)) # 転置
+# ログをファイル出力
+with open(datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')+'_dhc.csv', 'w') as f:
+    writer = csv.writer(f)
+    writer.writerows(logdata)
