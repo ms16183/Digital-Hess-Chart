@@ -9,13 +9,16 @@ def inch2cm(inch):
     return 2.54 * inch
 
 
-def get_dpi(monitor_inch):
-
+def get_monitor_dot():
     for m in get_monitors():
         if m.is_primary:
-            width, height = m.width, m.height
-            print(f'size={width}x{height}')
-            break
+            return m.width, m.height
+
+
+def get_dpi(monitor_inch):
+
+    width, height = get_monitor_dot()
+    print(f'size={width}x{height}')
 
     dots = sqrt(width**2 + height**2)
     dpi = dots / monitor_inch

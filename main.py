@@ -2,11 +2,13 @@ from datetime import datetime
 import PySimpleGUI as sg
 import csv
 import datetime
+
 import info
 from hess import HessChart
 import depthai
 import signal
 import numpy as np
+from math import atan, atan2
 from cam import Main, create_pipeline
 
 device = depthai.Device(create_pipeline())
@@ -60,20 +62,9 @@ window['-graph-'].bind('<Motion>', 'motion')
 window['-graph-'].bind('<ButtonPress-1>', 'click')
 
 # ---------- メインループ ----------
-#while True:
-for h, v in app.run():
+for horizontal_angle, vertical_angle in app.run():
 
-    event, values = window.read(timeout=10)
-
-    '''
-    # マウス移動時，緑ポインタの表示
-    if event == '-graph-motion':
-        mousex = window['-graph-'].user_bind_event.x
-        mousey = window['-graph-'].user_bind_event.y
-        window['-graph-'].relocate_figure(cursor, mousex, mousey)
-        print(mousex, mousey)
-    '''
-
+    event, values = window.read(timeout=100, timeout_key='-timeout-')
 
     # 切替えボタン押下時，Hessチャートの切り替え
     if event in ('-prev-', '-next-'):
@@ -94,22 +85,21 @@ for h, v in app.run():
         # チャート名切り替え
         window['-state-'].update(charts[chart_index].get_chart_name())
 
-        
-    # クリック時，グラフクリック位置の記録
-    if event == '-graph-click':
-        # マウス位置を座標に変換(中心を(0,0))
-        mousex = window['-graph-'].user_bind_event.x
-        mousey = window['-graph-'].user_bind_event.y
-        x =  2 * (mousex/pixel - 0.5)
-        y = -2 * (mousey/pixel - 0.5)
 
-        #print(f'[clicked]: x={x:.5f}, y={y:.5f}')
+    # timeout毎に取得した視線を表示
+    if event == '-timeout-':
+        h, v = horizontal_angle, vertical_angle
+        '''
+        # カメラ角度追加
+        w, h = info.get_monitor_dot()
+        v -= atan2(h/2, 30)
+        '''
+        # 左右反転
+        h = -h
 
         # ポイント(前の点を消すためにグラフ自体を再描画)
         charts[chart_index].draw()
-        #charts[chart_index].draw_point(x, y, color='g', use_xy=True)
-        charts[chart_index].draw_point(-h, v, color='g', use_xy=False)
-
+        charts[chart_index].draw_point(h, v, color='g')
         # 再描画
         graph_hess = window['-graph-'].draw_image(data=charts[chart_index].get_hess_chart_as_byte(), location=(0, 0))
         window['-graph-'].bring_figure_to_front(cursor)
