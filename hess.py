@@ -89,6 +89,7 @@ class HessChart:
         self.ax.set_xticks([])
         self.ax.set_yticks([])
 
+
     def convert_hess_coordinate(self, vertical_angle, horizontal_angle):
         """角度からHessチャート上の座標の値に変換する．
 
@@ -105,6 +106,32 @@ class HessChart:
         x = np.tan(phi)
         y = np.cos(theta)/(np.sin(theta)*np.cos(phi))
         return x, y
+
+
+    def convert_angle(self, x, y):
+        """Hessチャート上の座標から角度に変換する．
+
+        Args:
+            x (float): x座標
+            y (float): y座標
+
+        Returns:
+            float: 角度(v, h)[deg]
+        """
+        phi = np.arctan(x)
+        theta = np.arctan(1/(y*np.cos(phi)))
+
+        alpha = np.arccos(np.sqrt(np.sin(theta)**2*np.tan(phi)**2/(np.tan(phi)**2+1)))
+
+        horizontal_angle = (np.pi/2 - theta)*180/np.pi
+        vertical_angle = (np.pi/2 - alpha)*180/np.pi
+
+        if x < 0:
+            vertical_angle *= -1
+        if y < 0:
+            horizontal_angle -= 180
+
+        return vertical_angle, horizontal_angle
         
 
     def draw_point(self, vertical_angle, horizontal_angle, color='r', use_xy=False):
