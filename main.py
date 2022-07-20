@@ -82,7 +82,7 @@ while True:
         
     # クリック時，グラフクリック位置の記録
     if event == '-graph-click':
-        # マウス位置を座標に変換(中心を(0,0))
+        # マウス位置を座標に変換(中心を(0,0)，x=[-1, 1], y=[-1, 1])
         mousex = window['-graph-'].user_bind_event.x
         mousey = window['-graph-'].user_bind_event.y
         x =  2 * (mousex/pixel - 0.5)
@@ -118,7 +118,7 @@ window.close()
 # ログ出力用のリストを生成
 logdata = [['Name', 'Fixing Point X', 'Fixing Point Y', 'Point X', 'Point Y']]
 for c in charts:
-    logdata.append([c.get_chart_name(), *c.convert_hess_coordinate(*c.get_fixing_point_angle()), *c.get_point()])
+    logdata.append([c.get_chart_name(), *c.get_fixing_point_angle(), *c.convert_angle(*c.get_point())])
 logdata = list(zip(*logdata)) # 転置
 # ログをファイル出力
 with open(datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')+'_dhc.csv', 'w') as f:
