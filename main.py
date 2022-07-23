@@ -105,8 +105,8 @@ while True:
         # ログ
 
         print(f'{charts[chart_index].get_chart_name()}')
-        print(f'fixing point: {charts[chart_index].convert_hess_coordinate(*charts[chart_index].get_fixing_point_angle())}')
-        print(f'  your point: {charts[chart_index].get_point()}')
+        print(f'fixing point: {charts[chart_index].get_fixing_point_angle()}')
+        print(f'  your point: {charts[chart_index].convert_angle(*charts[chart_index].get_point())}')
         print(f'')
 
     # 終了ボタン押下時，アプリケーションの終了
@@ -120,7 +120,7 @@ while True:
 window.close() 
 
 # ログ出力用のリストを生成
-logdata = [['Name', 'Fixing Point X', 'Fixing Point Y', 'Point X', 'Point Y']]
+logdata = [['Name', 'Fixing Point Yaw', 'Fixing Point Pitch', 'Point Yaw', 'Point Pitch']]
 for c in charts:
     logdata.append([c.get_chart_name(), *c.get_fixing_point_angle(), *c.convert_angle(*c.get_point())])
 logdata = list(zip(*logdata)) # 転置
