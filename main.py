@@ -2,7 +2,7 @@ from datetime import datetime
 import PySimpleGUI as sg
 import csv
 import datetime
-
+import configparser
 import info
 from hess import HessChart
 import depthai
@@ -19,10 +19,13 @@ def signal_handler(sig, frame):
     app.running = False
 signal.signal(signal.SIGINT, signal_handler)
 
+# 設定ファイルロード
+config = configparser.ConfigParser()
+config.read('config.ini')
 # チャート(両眼9方向)
 # 作りたいサイズ，モニターのインチ数
-cm, inch = 50, 43
-cm, inch = 15, 27
+cm = config['screen'].getfloat('HessSize')
+inch = config['screen'].getfloat('MonitorInch')
 charts = [
     # 左眼
     HessChart(cm, inch, 'LEFT, top left',    (-15,  15)), HessChart(cm, inch, 'LEFT, top',    (0,  15)), HessChart(cm, inch, 'LEFT, top right',    (15,  15)),
@@ -106,8 +109,8 @@ for horizontal_angle, vertical_angle in app.run():
 
         # ログ
         print(f'{charts[chart_index].get_chart_name()}')
-        print(f'fixing point: {charts[chart_index].convert_hess_coordinate(*charts[chart_index].get_fixing_point_angle())}')
-        print(f'  your point: {charts[chart_index].get_point()}')
+        print(f'fixing point: {charts[chart_index].get_fixing_point_angle()}')
+        print(f'  your point: {charts[chart_index].convert_angle(*charts[chart_index].get_point())}')
         print(f'')
 
     # 終了ボタン押下時，アプリケーションの終了
@@ -124,7 +127,7 @@ window.close()
 device.close()
 
 # ログ出力用のリストを生成
-logdata = [['Name', 'Fixing Point X', 'Fixing Point Y', 'Point X', 'Point Y']]
+logdata = [['Name', 'Fixing Point Yaw', 'Fixing Point Pitch', 'Point Yaw', 'Point Pitch']]
 for c in charts:
     logdata.append([c.get_chart_name(), *c.get_fixing_point_angle(), *c.convert_angle(*c.get_point())])
 logdata = list(zip(*logdata)) # 転置
