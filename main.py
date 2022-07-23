@@ -2,14 +2,18 @@ from datetime import datetime
 import PySimpleGUI as sg
 import csv
 import datetime
+import configparser
 import info
 from hess import HessChart
 
 
+# 設定ファイルロード
+config = configparser.ConfigParser()
+config.read('config.ini')
 # チャート(両眼9方向)
 # 作りたいサイズ，モニターのインチ数
-cm, inch = 50, 43
-cm, inch = 15, 27
+cm = config['screen'].getfloat('HessSize')
+inch = config['screen'].getfloat('MonitorInch')
 charts = [
     # 左眼
     HessChart(cm, inch, 'LEFT, top left',    (-15,  15)), HessChart(cm, inch, 'LEFT, top',    (0,  15)), HessChart(cm, inch, 'LEFT, top right',    (15,  15)),
