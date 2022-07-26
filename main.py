@@ -9,10 +9,10 @@ import depthai
 import signal
 import numpy as np
 from math import atan, atan2
-from cam import Main, create_pipeline
+from cam import GazeCam, create_pipeline
 
 device = depthai.Device(create_pipeline())
-app = Main(device)
+app = GazeCam(device)
 
 # Ctrl+C検出
 def signal_handler(sig, frame):

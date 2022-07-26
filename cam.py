@@ -162,7 +162,7 @@ def create_pipeline():
     return pipeline
 
 
-class Main:
+class GazeCam:
     def __init__(self, device):
         self.device = device
         print("Starting pipeline...")
@@ -384,7 +384,7 @@ class Main:
 
 if __name__ == "__main__":
     with depthai.Device(create_pipeline()) as device:
-        app = Main(device)
+        app = GazeCam(device)
 
         # Register a graceful CTRL+C shutdown
         def signal_handler(sig, frame):
