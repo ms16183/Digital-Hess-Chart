@@ -4,62 +4,46 @@ matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import io
 
-from screeninfo.common import Monitor
-
-import info
-
-
-
 class HessChart:
-    def __init__(self, cm, inch, name, fixing_point_angle, angle=45, limit=1):
+    def __init__(self, name, dpi, fixing_point_angle, angle, depth):
         """Hessチャート描画
 
         Args:
-            cm (float): モニタ上の長さ(センチメートル)．
-            name (str): Hessチャートのタグ名．
-            inch (float): モニタの対角線のインチ数
-            fixing_point_angle (tuple): 固定点の角度．
-            angle (float, optional): Hessチャートの表示角度. Defaults to 45.
-            limit (float, optional): matplotlibの出力範囲指定. Defaults to 1.
+            name (str): Hessチャートのタグ名
+            dpi (float): モニタのDPI[inch]
+            fixing_point_angle (tuple): 固定点の角度[deg]
+            angle (float): Hessチャートの角度範囲(-angle~angle)[deg]
+            depth (float): スクリーンと被験者との固定距離[cm]
         """
-        # モニタ上の長さ
-        self.cm = cm
         # Hessチャート名
         self.name = name
-        # 対角インチ
-        self.inch = inch
+        # DPI
+        self.dpi = dpi
         # 固定点
         self.fixing_point_angle = fixing_point_angle
         # 視線の点
         self.point = (None, None)
         # Hessチャートの角度範囲
         self.angle = angle
-        # matplotlibの出力範囲(調整用)
-        self.limit = limit
+        # 固定距離
+        self.depth = depth
 
-        dpi = info.get_dpi(self.inch)
-
-        print(f'figsize={cm/2.54}, dpi={dpi}')
+        self.cm =  2 * np.tan(angle*np.pi/180) * self.depth
+        self.limit = np.tan(angle*np.pi/180)
 
         # 余白なしでグラフ生成
-        self.fig = plt.figure(figsize=(cm/2.54, cm/2.54), dpi=dpi)
+        self.fig = plt.figure(figsize=(self.cm/2.54, self.cm/2.54), dpi=self.dpi)
         self.fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
         self.ax = self.fig.add_subplot(1, 1, 1)
 
         self.draw()
 
             
-    def draw(self, angle=None, limit=None):
+    def draw(self):
         """チャートを描画する．
-
-        Args:
-            angle (float, optional): Hessチャートの表示角度. Defaults to None.
-            limit (float, optional): matplotlibの出力範囲指定. Defaults to None.
         """
-        if angle is None:
-            angle = self.angle
-        if limit is None:
-            limit = self.limit
+        angle = self.angle
+        limit = self.limit
 
         # すべて消去
         self.fig.gca().clear()
@@ -141,13 +125,14 @@ class HessChart:
             vertical_angle (float): 垂直角度[deg]
             horizontal_angle (float): 水平角度[deg]
             color (str, optional): 色
-            use_xy (bool, optional): 引数を(x, y)として捉える．
+            use_xy (bool, optional): 引数を[-1, 1]の間の(x, y)として捉える．
         """
         if use_xy:
-            x, y = vertical_angle, horizontal_angle
+            x, y = vertical_angle*self.limit, horizontal_angle*self.limit
         else:
             x, y = self.convert_hess_coordinate(vertical_angle, horizontal_angle)
 
+        # https://www.web-dev-qa-db-ja.com/ja/python/matplotlib%E7%89%B9%E5%AE%9A%E3%81%AE%E7%B7%9A%E3%81%BE%E3%81%9F%E3%81%AF%E6%9B%B2%E7%B7%9A%E3%82%92%E5%89%8A%E9%99%A4%E3%81%99%E3%82%8B%E6%96%B9%E6%B3%95/1043286160/
         self.point = (x, y)
         self.ax.plot(x, y, color+'.')
 
@@ -180,10 +165,6 @@ class HessChart:
         return item.getvalue()
 
 
-    def get_chart_info(self):
-        return info.get_dpi(self.inch), info.get_pixel(self.cm, self.inch)
-
-        
     def get_chart_name(self):
         return self.name
 
