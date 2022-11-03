@@ -44,9 +44,9 @@ layout = [
 window = sg.Window('Digital Hess Chart', layout,  disable_close=True, resizable=False, location=(width//2-pixel//2, 0))
 window.finalize()
 
-# 描画データ設定(Hessチャート，緑ポインタカーソル)
+# 描画データ設定(Hessチャート，緑ポインタカーソル, 25サイズ)
 graph_hess = window['-graph-'].draw_image(data=charts[chart_index].get_hess_chart_as_byte(), location=(0, 0))
-cursor = window['-graph-'].draw_point((-100, -100), 5, color='green')
+cursor = window['-graph-'].draw_point((-100, -100), 25, color='green')
 
 # カーソル設定(カーソル非表示)
 window['-graph-'].set_cursor('none')
@@ -62,8 +62,9 @@ while True:
 
     # マウス移動時，緑ポインタの表示
     if event == '-graph-motion':
-        mouse_x = window['-graph-'].user_bind_event.x
-        mouse_y = window['-graph-'].user_bind_event.y
+        # マーカーを左上から中心にシフト
+        mouse_x = window['-graph-'].user_bind_event.x - 25/2
+        mouse_y = window['-graph-'].user_bind_event.y - 25/2
         window['-graph-'].relocate_figure(cursor, mouse_x, mouse_y)
 
 

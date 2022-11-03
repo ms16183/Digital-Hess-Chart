@@ -134,7 +134,7 @@ class HessChart:
 
         # https://www.web-dev-qa-db-ja.com/ja/python/matplotlib%E7%89%B9%E5%AE%9A%E3%81%AE%E7%B7%9A%E3%81%BE%E3%81%9F%E3%81%AF%E6%9B%B2%E7%B7%9A%E3%82%92%E5%89%8A%E9%99%A4%E3%81%99%E3%82%8B%E6%96%B9%E6%B3%95/1043286160/
         self.point = (x, y)
-        self.ax.plot(x, y, color+'.')
+        self.ax.plot(x, y, color+'.', markersize=50)
 
         
     def get_point(self):
